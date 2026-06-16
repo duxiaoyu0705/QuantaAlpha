@@ -176,7 +176,7 @@ class FactorFBWorkspace(FBWorkspace):
                     env['PYTHONPATH'] = pythonpath
                 
                 subprocess.check_output(
-                    f"{FACTOR_COSTEER_SETTINGS.python_bin} {execution_code_path}",
+                    f"{FACTOR_COSTEER_SETTINGS.python_bin} {execution_code_path.absolute()}",
                     shell=True,
                     cwd=self.workspace_path,
                     stderr=subprocess.STDOUT,

@@ -608,6 +608,9 @@ class APIBackend:
         )
 
     def create_embedding(self, input_content: str | list[str], **kwargs: Any) -> list[Any] | Any:
+        if not LLM_SETTINGS.embedding_model:
+            input_list = [input_content] if isinstance(input_content, str) else input_content
+            return [[0.0] * 1536 for _ in input_list] if isinstance(input_content, list) else [0.0] * 1536
         input_content_list = [input_content] if isinstance(input_content, str) else input_content
         resp = self._try_create_chat_completion_or_embedding(
             input_content_list=input_content_list,
@@ -972,7 +975,14 @@ def calculate_embedding_distance_between_str_list(
     if not source_str_list or not target_str_list:
         return [[]]
 
-    embeddings = APIBackend().create_embedding(source_str_list + target_str_list)
+    if not LLM_SETTINGS.embedding_model:
+        return [[0.0] * len(target_str_list) for _ in range(len(source_str_list))]
+
+    try:
+        embeddings = APIBackend().create_embedding(source_str_list + target_str_list)
+    except Exception:
+        logger.warning("Embedding creation failed, returning zero similarity matrix")
+        return [[0.0] * len(target_str_list) for _ in range(len(source_str_list))]
 
     source_embeddings = embeddings[: len(source_str_list)]
     target_embeddings = embeddings[len(source_str_list) :]

@@ -116,7 +116,7 @@ class QlibFactorRunner(CachedRunner[QlibFactorExperiment]):
                             project_root = Path(__file__).parent.parent.parent.parent.parent
                             env['PYTHONPATH'] = str(project_root) + os.pathsep + env.get('PYTHONPATH', '')
                             subprocess.check_output(
-                                [sys.executable, str(ws.workspace_path / 'factor.py')],
+                                [sys.executable, str((ws.workspace_path / 'factor.py').absolute())],
                                 cwd=str(ws.workspace_path),
                                 stderr=subprocess.STDOUT,
                                 env=env,
